@@ -114,22 +114,26 @@ public class Weapon : MonoBehaviour
             bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero); // -1 is Infinity per
         }
     }
-    private void Attack()
+    private void Attack() //마우스 클릭시 발동
     {
+        //저장된 공격했던 시간을 비교해 공격 속도를 제한
         if (Time.time - lastAttackTime < attackInterval)
             return;
-
+        //공격한 시간을 저장
         lastAttackTime = Time.time;
-
+        //마우스 위치 확인
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //collider를 가진 오브젝트 생성
         Instantiate(attackEaffectPrefab, mousePosition, Quaternion.identity);
 
+        //현 마우스 위치에서 collider를 가진 객체 리스트에 저장
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(mousePosition, 3f);
         foreach (Collider2D collider in hitColliders)
         {
             if (collider.gameObject.tag == "Enemy")
             {
-                collider.SendMessage("OntakeDamage", cutDamage, SendMessageOptions.DontRequireReceiver);
+                collider.SendMessage("OntakeDamage", cutDamage, 
+                SendMessageOptions.DontRequireReceiver);
             }
         }
         Audiomanager.instance.PlaySfx(Audiomanager.Sfx.Melee);
